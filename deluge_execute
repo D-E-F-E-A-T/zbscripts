@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Arguments
+tid=$1
+tname=$2
+tpath=$3
+#logfile=/home/pi/deluge_execute.log
+#echo -e "Tid: " "$tid" "\nTname: " "$tname" "\nTpath: " "$tpath" >> "$logfile"
+
+# Variables
+download=/home/pi/Downloads
+media=/media/storage/Media
+temp=/media/storage/.temp
+
+# Extract the files
+if [ "$tpath" = "$download" ]; then
+  #rsync -r "$download"/"$tname" "$media" && /home/pi/unrarall/unrarall -o "$media" --clean=all "$media"/"$tname" && rm -r "$media"/"$tname" && echo -e "$tname" "extracted to " "$media" >> "$logfile" &
+  echo "Download complete for" "$tname"
+  cd "$download"/"$tname"
+  if [ -f *.rar ]; then
+    echo "Extracting... " "$tname" && unrar x -r -o+ *.rar "$media" && echo "Extraction complete" &
+  else
+    echo "Copying files for" "$tname" && cp -u *.{mp4,m4v,mkv,mpg,mpeg,avi,wmv,mov,flv,srt,sub} "$media" && echo "Copying complete" &
+  fi
+elif [ "$tpath" = "$temp" ]; then
+  #/home/pi/unrarall/unrarall -o "$temp" --clean=none "$temp"/"$tname" && cd "$temp"/"$tname" && mv *.{mp4,m4v,mkv,mpg,mpeg,avi,wmv,mov,flv} "$temp" && echo -e "$tname" "extracted to " "$temp" >> "$logfile" &
+  echo "Download complete for" "$tname"
+  cd "$temp"/"$tname"
+  if [ -f *.rar ]; then
+    echo "Extracting... " "$tname" && unrar x -r -o+ *.rar "$temp" && echo "Extraction complete" && rm -R "$temp"/"tname" &
+  else
+    echo "Moving files for" "$tname" && mv -u *.{mp4,m4v,mkv,mpg,mpeg,avi,wmv,mov,flv} "$temp" && echo "Moving complete" && rm -R "$temp"/"tname" &
+  fi
+else
+  echo "Nothing to extract..."
+fi
